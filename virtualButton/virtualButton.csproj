@@ -114,6 +114,12 @@
     <Compile Include="Assets\Vuforia\Scripts\WireframeBehaviour.cs" />
     <Compile Include="Assets\Vuforia\Scripts\WireframeTrackableEventHandler.cs" />
     <Compile Include="Assets\Vuforia\Scripts\WordBehaviour.cs" />
+    <Compile Include="Assets\collider_army.cs" />
+    <Compile Include="Assets\monsterCollision.cs" />
+    <Compile Include="Assets\move_down.cs" />
+    <Compile Include="Assets\move_left.cs" />
+    <Compile Include="Assets\move_right.cs" />
+    <Compile Include="Assets\move_up.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Plugins\Android\AndroidManifest.xml" />
