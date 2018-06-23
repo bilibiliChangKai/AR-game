@@ -10,13 +10,16 @@ public class monsterCollision : MonoBehaviour
     private Animator _animator;
     double blood;
     double time;
-    private GameObject player;
+    int turn;
+    private GameObject player,player1,player2;
     // Use this for initialization
     void Start()
     {
         blood = 100;
-        time = 3;
-        player = GameObject.Find("WK_heavy_infantry");
+        time = 0.7;
+        player = GameObject.Find("player");
+        player1 = GameObject.Find("player1");
+        player2 = GameObject.Find("player2");
         _animator = this.GetComponent<Animator>();
         _animator.SetBool("combat", false);
         _animator.SetBool("dead", false);
@@ -25,6 +28,8 @@ public class monsterCollision : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        turn = control.Get_turn();
+        print("the turn:"+turn.ToString());
         if (_animator.GetBool("combat"))
         {
             blood -= 0.1;
@@ -41,15 +46,31 @@ public class monsterCollision : MonoBehaviour
         if (time <= 0)
         {
             this.gameObject.SetActive(false);
+            Win_the_game();
         }
-        if (player.GetComponent<Animator>().GetBool("dead"))
+        if (player.active&&player.GetComponent<Animator>().GetBool("dead"))
         {
             _animator.SetBool("combat", false);
+            
+        }
+        if (player1.active && player1.GetComponent<Animator>().GetBool("dead"))
+        {
+            _animator.SetBool("combat", false);
+
+        }
+        if (player2.active && player2.GetComponent<Animator>().GetBool("dead"))
+        {
+            _animator.SetBool("combat", false);
+
         }
     }
 
 
+    void Win_the_game()
+    {
+        print("win the game");
 
+    }
 
     // 碰撞开始
     void OnCollisionEnter(Collision collision)
