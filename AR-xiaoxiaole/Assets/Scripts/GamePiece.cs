@@ -69,6 +69,12 @@ public class GamePiece : MonoBehaviour {
         get { return generativeComponent; }
     }
 
+    private ScaleablePiece scaleableComponent;
+
+    public ScaleablePiece ScaleableComponent
+    {
+        get { return scaleableComponent; }
+    }
 
     void Awake()
 	{
@@ -76,6 +82,7 @@ public class GamePiece : MonoBehaviour {
 		colorComponent = GetComponent<ColorPiece> ();
 		clearableComponent = GetComponent<ClearablePiece> ();
         generativeComponent = GetComponent<GenerativePiece>();
+        scaleableComponent = GetComponent<ScaleablePiece>();
     }
 
 	// Use this for initialization
@@ -129,5 +136,10 @@ public class GamePiece : MonoBehaviour {
     public bool IsGenerative()
     {
         return generativeComponent != null;
+    }
+
+    public bool IsScaleable()
+    {
+        return scaleableComponent != null;
     }
 }

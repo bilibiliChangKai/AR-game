@@ -4,4 +4,14 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/xiaoxiaole.unity
+    guid: f7420d2d805b846599aa27e2ca9f009b
+  - enabled: 1
+    path: Assets/Scenes/levelSelect.unity
+    guid: 096032168ae3d4400b681e4c78ae0e45
+  - enabled: 1
+    path: Assets/Scenes/next.unity
+    guid: 35224e71f935c6e479ee1642b7a9ce37
+  m_configObjects: {}

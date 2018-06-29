@@ -9,11 +9,6 @@ public class Grid : MonoBehaviour
     {
         EMPTY,
         NORMAL,
-        //BUBBLE,
-        //ROW_CLEAR,
-        //COLUMN_CLEAR,
-        //RAINBOW,
-        //COUNT,
     };
 
     [System.Serializable]
@@ -34,6 +29,7 @@ public class Grid : MonoBehaviour
     public int xDim;
     public int yDim;
     public float fillTime;
+    public float scale;
 
     public Level level;
 
@@ -60,6 +56,12 @@ public class Grid : MonoBehaviour
         get { return isFilling; }
     }
 
+    // 一个例子，只用来获取color
+    private GamePiece examplepiece;
+
+    // 一个函数定义
+    private delegate void Func();
+
     void Awake()
     {
         piecePrefabDict = new Dictionary<PieceType, GameObject>();
@@ -76,7 +78,9 @@ public class Grid : MonoBehaviour
         {
             for (int y = 0; y < yDim; y++)
             {
+                // 设置物体位置和大小
                 GameObject background = (GameObject)Instantiate(backgroundPrefab, GetWorldPosition(x, y), Quaternion.identity);
+                background.transform.localScale = new Vector3(scale, scale, 1);
                 background.transform.parent = transform;
             }
         }
@@ -103,6 +107,14 @@ public class Grid : MonoBehaviour
             }
         }
 
+        // 设置最高级
+        GameObject newPiece = (GameObject)Instantiate(piecePrefabDict[PieceType.NORMAL], GetWorldPosition(0, 0), Quaternion.identity);
+        newPiece.transform.localScale = new Vector3(scale, scale, 1);
+        newPiece.SetActive(false);
+        newPiece.transform.parent = transform;
+        examplepiece = newPiece.GetComponent<GamePiece>();
+        examplepiece.ColorComponent.SetColor(ColorPiece.ColorType.COUNT - 2);
+
         StartCoroutine(Fill());
     }
 
@@ -119,7 +131,7 @@ public class Grid : MonoBehaviour
 
         while (needsRefill)
         {
-            yield return new WaitForSeconds(fillTime);
+            yield return new WaitForSeconds(fillTime * 2.5f);
 
             while (FillStep())
             {
@@ -224,6 +236,7 @@ public class Grid : MonoBehaviour
             {
                 Destroy(pieceBelow.gameObject);
                 GameObject newPiece = (GameObject)Instantiate(piecePrefabDict[PieceType.NORMAL], GetWorldPosition(x, -1), Quaternion.identity);
+                newPiece.transform.localScale = new Vector3(scale, scale, 1);
                 newPiece.transform.parent = transform;
 
                 pieces[x, 0] = newPiece.GetComponent<GamePiece>();
@@ -240,12 +253,20 @@ public class Grid : MonoBehaviour
     public Vector2 GetWorldPosition(int x, int y)
     {
         return new Vector2(transform.position.x - xDim / 2.0f + x,
-            transform.position.y + yDim / 2.0f - y);
+            transform.position.y + yDim / 2.0f - y) * scale * (float)1.05;
+    }
+
+    public Vector2 GetWorldPosition(int x, int y, float scale)
+    {
+        return new Vector2(transform.position.x - xDim / 2.0f + x,
+            transform.position.y + yDim / 2.0f - y) * scale * (float)1.05;
     }
 
     public GamePiece SpawnNewPiece(int x, int y, PieceType type)
     {
+        // 设置物体大小和位置
         GameObject newPiece = (GameObject)Instantiate(piecePrefabDict[type], GetWorldPosition(x, y), Quaternion.identity);
+        newPiece.transform.localScale = new Vector3(scale, scale, 1);
         newPiece.transform.parent = transform;
 
         pieces[x, y] = newPiece.GetComponent<GamePiece>();
@@ -310,13 +331,31 @@ public class Grid : MonoBehaviour
 
     public void ClickPiece(GamePiece piece)
     {
-        level.OnPieceClicked(piece);
-        ClearPiece(piece.X, piece.Y);
+        piece.ScaleableComponent.Scale(0.5f, fillTime * 2);
+        Vector3 target = new Vector3(-6.5f, -1.5f);
+        List<Vector3> vectors = new List<Vector3>(2);
+        vectors.Add(new Vector3(piece.transform.position.x, (target.y + piece.transform.position.y) / 2));
+        vectors.Add(new Vector3((target.x + piece.transform.position.x) / 2, target.y));
+        piece.MovableComponent.BezierMove(target, vectors, fillTime * 2);
         StartCoroutine(Fill());
+        level.OnMove();
+
+        // 延迟进行
+        StartCoroutine(DelayFunc(() => {
+            level.OnPieceClicked(piece);
+            ClearPiece(piece.X, piece.Y);
+        }, fillTime * 2));
+    }
+
+    private IEnumerator DelayFunc(Func f, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        f();
     }
 
     public void ReleasePiece()
     {
+        if (gameOver) return;
         // 点击同一个物体，直接消除
         if (pressedPiece == enteredPiece)
         {
@@ -567,26 +606,24 @@ public class Grid : MonoBehaviour
                         {
                             ColorPiece.ColorType temp = match[i].ColorComponent.Color;
 
-                            if (ClearPiece(match[i].X, match[i].Y))
-                            {
-                                needsRefill = true;
-                                colortype = temp;
-
-                                if (match[i] == pressedPiece || match[i] == enteredPiece)
+                                if (ClearPiece(match[i].X, match[i].Y))
                                 {
-                                    specialPieceX = match[i].X;
-                                    specialPieceY = match[i].Y;
+                                    needsRefill = true;
                                     colortype = temp;
-                                }
-                            }
-                        }
 
-                        print(colortype);
+                                    if (match[i] == pressedPiece || match[i] == enteredPiece)
+                                    {
+                                        specialPieceX = match[i].X;
+                                        specialPieceY = match[i].Y;
+                                        colortype = temp;
+                                    }
+                                }
+                        }
                         
-                        // 最高等级，直接拿出
-                        if (colortype == ColorPiece.ColorType.PINK)
+                        // 最高等级，直接拿出,并展示动画
+                        if (colortype == ColorPiece.ColorType.COUNT - 2)
                         {
-                            level.OnPieceClicked(null);
+                            level.OnPieceClicked(examplepiece);
                         }
                         // 不是最高等级，进行升级
                         else
@@ -594,8 +631,8 @@ public class Grid : MonoBehaviour
                             Destroy(pieces[specialPieceX, specialPieceY]);
                             GamePiece newPiece = SpawnNewPiece(specialPieceX, specialPieceY, specialPieceType);
                             newPiece.ColorComponent.SetColor(colortype + 1);
-                            newPiece.GenerativeComponent.Generate();
-                        }
+                            newPiece.GenerativeComponent.Generate(fillTime, fillTime);
+                        };
                     }
                 }
             }
@@ -611,7 +648,7 @@ public class Grid : MonoBehaviour
             pieces[x, y].ClearableComponent.Clear();
             SpawnNewPiece(x, y, PieceType.EMPTY);
 
-            ClearObstacles(x, y);
+            //ClearObstacles(x, y);
 
             return true;
         }
@@ -621,29 +658,6 @@ public class Grid : MonoBehaviour
 
     public void ClearObstacles(int x, int y)
     {
-        for (int adjacentX = x - 1; adjacentX <= x + 1; adjacentX++)
-        {
-            if (adjacentX != x && adjacentX >= 0 && adjacentX < xDim)
-            {
-                //if (pieces[adjacentX, y].Type == PieceType.BUBBLE && pieces[adjacentX, y].IsClearable())
-                //{
-                //    pieces[adjacentX, y].ClearableComponent.Clear();
-                //    SpawnNewPiece(adjacentX, y, PieceType.EMPTY);
-                //}
-            }
-        }
-
-        for (int adjacentY = y - 1; adjacentY <= y + 1; adjacentY++)
-        {
-            if (adjacentY != y && adjacentY >= 0 && adjacentY < yDim)
-            {
-                //if (pieces[x, adjacentY].Type == PieceType.BUBBLE && pieces[x, adjacentY].IsClearable())
-                //{
-                //    pieces[x, adjacentY].ClearableComponent.Clear();
-                //    SpawnNewPiece(x, adjacentY, PieceType.EMPTY);
-                //}
-            }
-        }
     }
 
     public void ClearRow(int row)

@@ -4,14 +4,11 @@ using UnityEngine;
 
 public class GenerativePiece : MonoBehaviour {
 
-    public AnimationClip generateAnimation;
-
-    protected GamePiece piece;
+    private GamePiece piece;
 
     void Awake()
     {
         piece = GetComponent<GamePiece>();
-        //this.GetComponent<Material>().color = new Color(1, 1, 1, 0);
     }
 
     // Use this for initialization
@@ -26,24 +23,28 @@ public class GenerativePiece : MonoBehaviour {
 
     }
 
-    public virtual void Generate()
+    public virtual void Generate(float time, float delay = 0)
     {
-        StartCoroutine(GenerateCoroutine());
+        StartCoroutine(GenerateCoroutine(time, delay));
     }
 
-    private IEnumerator GenerateCoroutine()
+    private IEnumerator GenerateCoroutine(float time, float delay)
     {
-        Animator animator = GetComponent<Animator>();
-
-        if (animator)
+        Vector4 startColor = new Vector4(1, 1, 1, 0);
+        Vector4 endColor = new Vector4(1, 1, 1, 1);
+        piece.GetComponentInChildren<SpriteRenderer>().material.color = startColor
+            ;
+        if (delay != 0)
         {
-            //print("enter");
-            //print(this.transform.position);
-            animator.Play(generateAnimation.name);
-
-            yield return new WaitForSeconds(generateAnimation.length);
-
-            Destroy(this);
+            yield return new WaitForSeconds(delay);
         }
+
+        for (float t = 0; t <= 1 * time; t += Time.deltaTime)
+        {
+            piece.GetComponentInChildren<SpriteRenderer>().material.color = Vector4.Lerp(startColor, endColor, t / time);
+            yield return 0;
+        }
+
+        piece.GetComponentInChildren<SpriteRenderer>().material.color = endColor;
     }
 }

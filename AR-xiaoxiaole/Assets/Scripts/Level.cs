@@ -5,11 +5,10 @@ public class Level : MonoBehaviour {
 	public Grid grid;
 	public HUD hud;
 
-	protected int currentSoldier = 0;
+	protected int currentSoldier;
 
 	// Use this for initialization
 	void Start () {
-		hud.SetSoldier (currentSoldier);
 	}
 	
 	// Update is called once per frame
@@ -31,7 +30,6 @@ public class Level : MonoBehaviour {
 	public virtual void OnPieceClicked(GamePiece piece)
 	{
         currentSoldier++;
-		hud.SetSoldier(currentSoldier);
 	}
 
     public virtual void OnPieceCleared(GamePiece piece)

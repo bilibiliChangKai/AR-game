@@ -7,7 +7,11 @@ public class HUD : MonoBehaviour {
 	public GameOver gameOver;
 
 	public UnityEngine.UI.Text remainingText;
-	public UnityEngine.UI.Text soldierText;
+	public UnityEngine.UI.Text []soldierText;
+
+    void Awake()
+    {
+    }
 
 	// Use this for initialization
 	void Start () {
@@ -18,9 +22,9 @@ public class HUD : MonoBehaviour {
 	
 	}
 
-	public void SetSoldier(int score)
+	public void SetSoldier(int level, int score)
 	{
-        soldierText.text = score.ToString ();
+        soldierText[level].text = score.ToString ();
 	}
 
 	public void SetRemaining(int remaining)

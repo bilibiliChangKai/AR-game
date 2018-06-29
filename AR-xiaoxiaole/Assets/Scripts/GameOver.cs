@@ -35,6 +35,6 @@ public class GameOver : MonoBehaviour {
 
 	public void OnDoneClicked()
 	{
-		UnityEngine.SceneManagement.SceneManager.LoadScene ("levelSelect");
+		UnityEngine.SceneManagement.SceneManager.LoadScene ("next");
 	}
 }

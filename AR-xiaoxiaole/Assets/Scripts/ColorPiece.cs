@@ -6,14 +6,18 @@ public class ColorPiece : MonoBehaviour {
 
 	public enum ColorType
 	{
-		YELLOW,
-		PURPLE,
-		RED,
-		BLUE,
-		PINK,
-		ANY,
-		COUNT
-	};
+		//YELLOW,
+		//PURPLE,
+		//RED,
+		//BLUE,
+		//PINK,
+
+        SOLDIER,
+        ARCHER,
+        CAVALRY,
+        ANY,
+        COUNT
+    };
 
 	[System.Serializable]
 	public struct ColorSprite
@@ -43,7 +47,6 @@ public class ColorPiece : MonoBehaviour {
 	void Awake()
 	{
 		sprite = transform.Find ("piece").GetComponent<SpriteRenderer> ();
-
 		colorSpriteDict = new Dictionary<ColorType, Sprite> ();
 
 		for (int i = 0; i < colorSprites.Length; i++) {
