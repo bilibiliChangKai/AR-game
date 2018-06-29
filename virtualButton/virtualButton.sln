@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2015
+# Visual Studio 15
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "virtualButton", "virtualButton.csproj", "{FBFE1F6C-5982-F5AD-3511-CC64AC8D4D5D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "virtualButton.Editor", "virtualButton.Editor.csproj", "{D9B388A3-B6F4-9E4E-041E-406EEC0EF6CA}"
