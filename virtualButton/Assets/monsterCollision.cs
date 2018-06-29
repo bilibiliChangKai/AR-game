@@ -3,7 +3,7 @@
 
 using UnityEngine;
 using System.Collections;
-
+using UnityEngine.SceneManagement;
 public class monsterCollision : MonoBehaviour
 {
 
@@ -69,7 +69,7 @@ public class monsterCollision : MonoBehaviour
     void Win_the_game()
     {
         print("win the game");
-
+        SceneManager.LoadScene("victory");
     }
 
     // 碰撞开始

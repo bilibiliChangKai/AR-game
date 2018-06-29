@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class control : MonoBehaviour {
     public  GameObject player;
@@ -34,6 +35,32 @@ public class control : MonoBehaviour {
         /*
          * 读入代码，修改has1,2,3;
          * */
+        if (PlayerPrefs.GetInt("level0") == 0)
+        {
+            has_1 = false;
+        }
+        else
+        {
+            has_1 = true;
+        }
+        if (PlayerPrefs.GetInt("level1") == 0)
+        {
+            has_2 = false;
+        }
+        else
+        {
+            has_2 = true;
+        }
+        if (PlayerPrefs.GetInt("level2") == 0)
+        {
+            has_3 = false;
+        }
+        else
+        {
+            has_3 = true;
+        }
+
+
         if (!has_3)
         {
             end = 2;
@@ -146,7 +173,7 @@ public class control : MonoBehaviour {
     void Lose_the_game()
     {
         print("lose the game");
-        //跳转
+        SceneManager.LoadScene("defeat");
     }
     public static int Get_turn()
     {
